@@ -32,6 +32,8 @@ def convert_to_xf1():
         next(reader)
         for row in reader:
             if row:
+                if row[0] == 'Product' or row[0] == 'Code':
+                    continue
                 f.write('IP0')
                 product_code = row[0].strip()
                 product_code = product_code.zfill(4)
