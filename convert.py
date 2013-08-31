@@ -46,4 +46,5 @@ def convert_to_xf1():
                 f.write(product_code.rjust(128))
                 f.write('\r\n')
 
+
 convert_to_xf1()
