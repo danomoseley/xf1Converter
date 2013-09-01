@@ -80,7 +80,8 @@ def convert_ingredient_list():
             [plant_file_570, '570'],
             [plant_file_580, '580']
         ]
-        f = open(directory+os.sep+'cost_output_'+formated_date+'.xf1','wb')
+        output_filename = directory+os.sep+'cost_output_'+formated_date+'.xf1'
+        f = open(output_filename,'wb')
         exception_file = directory+os.sep+'cost_exception_report_'+formated_date+'.txt'
         exception_fh = open(exception_file,'wb')
         counts_by_plant = {}
@@ -107,6 +108,11 @@ def convert_ingredient_list():
                             exception_fh.write('\r\n')
 
             print "Exception report written to %s" % exception_file
+        print "Cost output written to %s" % output_filename
+        print "%d costs for Adams Center (550 / 64)" % counts_by_plant['550']
+        print "%d costs for Augusta (560 / 61)" % counts_by_plant['560']
+        print "%d costs for Brandon (570 / 68)" % counts_by_plant['570']
+        print "%d costs for Sangerfield (580 / 66)" % counts_by_plant['580']
         pprint.pprint(counts_by_plant)
     except Exception, e:
         print "Error encountered in convert_ingredient_list: " + str(e)
