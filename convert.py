@@ -42,8 +42,8 @@ def read_product_cost():
             reader = csv.reader(csvfile, delimiter=',', quotechar='|')
             for row in reader:
                 if row[0] != 'ITE' and row[0] != 'LOC':
-                    loc = row[0].replace(u'\xff', u'').replace(u'\xa0',u'').strip()
-                    item_number = row[3].replace(u'\xff', u'').replace(u'\xa0', u'')
+                    loc = row[0].replace('\xff', '').replace('\xa0','').strip()
+                    item_number = row[3].replace('\xff', '').replace('\xa0', '')
                     if loc not in product_cost:
                         product_cost[loc] = {}
                     product_cost[loc][item_number] = float(row[10])
