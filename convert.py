@@ -45,7 +45,7 @@ def get_required_file_confirm(description):
     user_input = raw_input(prompt).lower()
 
     while(user_input != 'y' and user_input != ''):
-        input_file = get_required_file(description)
+        input_file = get_required_file_confirm(description)
     return input_file
 
 def read_product_cost():
