@@ -146,7 +146,7 @@ def convert_to_xf1(product_code_prefix, plant_number, plant_name):
             if plant[0].lower() != plant_name.lower():
                 print "%s is for %s, %s expected" % (input_filename, plant[0], plant_name)
                 convert_to_xf1(product_code_prefix, plant_number, plant_name)
-                return false
+                return False
 
             next(reader)
             next(reader)
