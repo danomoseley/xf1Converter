@@ -29,8 +29,11 @@ def get_required_file(message):
     root.destroy()
 
     if not input_filename:
-        print "Missing required file, exiting."
-        sys.exit()
+        input = raw_input("Missing required file, try again? [y/n]: ")
+        if input.lower() == 'n':
+            sys.exit()
+        else:
+            return get_required_file(message)
     return input_filename
 
 def read_product_cost():
@@ -60,7 +63,6 @@ def convert_ingredient_list():
         plant_file_550 = get_required_file("Choose Brill ingredient list for Adams Center (550 / 64)")
         while(raw_input("\r\nAre you sure this file is correct for Adams Center (550 / 64)? [y/n]\r\n"+plant_file_550+" ").lower() != 'y'):
             plant_file_550 = get_required_file("Choose Brill ingredient list for Adams Center (550 / 64)")
-
 
         plant_file_560 = get_required_file("Choose Brill ingredient list for Augusta (560 / 61)")
         while(raw_input("\r\nAre you sure this file is correct for Augusta (560 / 61)? [y/n]\r\n"+plant_file_560+" ").lower() != 'y'):
