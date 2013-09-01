@@ -199,7 +199,7 @@ def ingredient_selection(product_codes, product_codes_sorted):
 monthly = raw_input("Is this a monthly update? [y/n]: ")
 if monthly.lower() == 'y':
     convert_ingredient_list()
-convert_to_xf1('61', '560', 'Augusta')
+convert_to_xf1('61', '560', 'Augusta Mill')
 convert_to_xf1('64', '550', 'Adams Center')
-convert_to_xf1('66', '580', 'Sangerfield')
-convert_to_xf1('68', '570', 'Brandon')
+convert_to_xf1('66', '580', 'Sangerfield Mill')
+convert_to_xf1('68', '570', 'Brandon Mill')
