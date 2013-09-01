@@ -1,20 +1,76 @@
 #!/usr/bin/python
-import sys
-import csv
-import time
+import sys, csv, time, os
 import win32com.client
 import win32clipboard
 
-product_codes = {}
-product_codes_sorted = []
 shell = win32com.client.Dispatch("WScript.Shell")
 
-def convert_to_xf1():
-    input_filename = raw_input("Enter filename: ")
-    product_code_prefix = raw_input("Enter product code prefix: ")
+t = time.localtime()
+formated_date = time.strftime('%m%d%y', t)
 
-    t = time.localtime()
-    formated_date = time.strftime('%m%d%y', t)
+directory = formated_date
+if not os.path.exists(directory):
+    os.makedirs(directory)
+
+def read_product_cost():
+    input_filename = raw_input("Enter filename for Agris csv cost file: ")
+    #input_filename = 'Misc Product Cost 8.30.13.csv'
+    product_cost = {}
+    with open(input_filename, 'rbU') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for row in reader:
+            if row[0] != 'ITE' and row[0] != 'LOC':
+                loc = row[0].replace('\xff', '')
+                item_number = row[3].replace('\xff', '')
+                if loc not in product_cost:
+                    product_cost[loc] = {}
+                product_cost[loc][item_number] = float(row[10])
+    return product_cost
+
+def convert_ingredient_list():
+    product_cost = read_product_cost()
+    plant_file_550 = raw_input("Enter Brill ingredient list filename for Adams Center (550): ")
+    plant_file_560 = raw_input("Enter Brill ingredient list filename for Augusta (560): ")
+    plant_file_570 = raw_input("Enter Brill ingredient list filename for Brandon (570): ")
+    plant_file_580 = raw_input("Enter Brill ingredient list filename for Sangerfield (580): ")
+
+    plant_files = [
+        plant_file_550,
+        plant_file_560,
+        plant_file_570,
+        plant_file_580
+    ]
+    f = open(directory+os.sep+'cost_output_'+formated_date+'.xf1','wb')
+    exception_fh = open(directory+os.sep+'cost_exception_report_'+formated_date+'.txt','wb')
+    counts_by_plant = {}
+    for filepath in plant_files:
+        with open(filepath, 'rb') as csvfile:
+            reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
+            next(reader)
+            parts = filepath.replace('.TXT','').split(' ')
+            loc = parts[2].strip()
+            counts_by_plant[loc] = 0
+            for row in reader:
+                product_number = row[0].strip()
+                if product_number != 'Code':
+                    if product_number in product_cost[loc]:
+                        cost_ton = product_cost[loc][product_number]
+                        cost = "%.4f" % round(cost_ton/20 ,4)
+                        f.write('IP'+loc)
+                        f.write(product_number.rjust(10))
+                        f.write(cost.rjust(12))
+                        f.write('\r\n')
+                        counts_by_plant[loc] = counts_by_plant[loc] + 1
+                    else:
+                        print "Cost not found for " + product_number + " @ " + loc
+                        exception_fh.write("Cost not found for " + product_number + " (" + row[1] + ") @ " + loc)
+                        exception_fh.write('\r\n')
+    print counts_by_plant
+
+def convert_to_xf1(product_code_prefix, plant_name):
+    input_filename = raw_input("Enter filename for SS ingredient cost for "+plant_name+": ")
+    #input_filename = 'BRANDON TEST MO 09.02.13.TXT'
+
     output_filename = 'Master'+formated_date+'Ing'+product_code_prefix+'.xf1'
 
     prefix_exclusions = {}
@@ -24,8 +80,10 @@ def convert_to_xf1():
             if row[0]:
                 prefix_exclusions[row[0]] = True
 
+    product_codes_sorted = []
+    product_codes = {}
     with open(input_filename, 'rb') as csvfile:
-        f = open(output_filename,'wb')
+        f = open(directory+os.sep+output_filename,'wb')
         reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
         f.write('XF Version = 5\r\n')
         next(reader)
@@ -52,6 +110,7 @@ def convert_to_xf1():
                 f.write(product_code.rjust(128))
                 f.write('\r\n')
         product_codes_sorted.sort()
+    ingredient_selection(product_codes, product_codes_sorted)
 
 def copy_and_get_clipboard_data():
     shell.SendKeys("^c", 0)
@@ -61,7 +120,7 @@ def copy_and_get_clipboard_data():
     win32clipboard.CloseClipboard()
     return data
 
-def ingredient_selection():
+def ingredient_selection(product_codes, product_codes_sorted):
     raw_input("Press enter when ready for ingredient selection")
     time.sleep(5)
 
@@ -85,5 +144,10 @@ def ingredient_selection():
     print "%d codes found and selected" % found
     raw_input("Press enter to quit")
 
-convert_to_xf1()
-ingredient_selection()
+monthly = raw_input("Is this a monthly update? [y/n]: ")
+if monthly == 'y':
+    convert_ingredient_list()
+convert_to_xf1('64', 'Adams Center')
+convert_to_xf1('61', 'Augusta')
+convert_to_xf1('68', 'Brandon')
+convert_to_xf1('66', 'Sangerfield')
