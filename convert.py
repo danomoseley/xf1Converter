@@ -2,6 +2,7 @@
 IS_WIN = True
 import sys, csv, time, os, pprint, traceback
 from Tkinter import Tk
+import Tkinter
 from tkFileDialog import askopenfilename
 if IS_WIN:
     import win32com.client
@@ -17,8 +18,16 @@ if not os.path.exists(directory):
     os.makedirs(directory)
 
 def get_required_file(message):
-    Tk().withdraw()
+    root = Tkinter.Tk()
+    root.withdraw()
+    root.overrideredirect(True)
+    root.geometry('0x0+0+0')
+    root.deiconify()
+    root.lift()
+    root.focus_force()
     input_filename = askopenfilename(title=message)
+    root.destroy()
+
     if not input_filename:
         print "Missing required file, exiting."
         sys.exit()
