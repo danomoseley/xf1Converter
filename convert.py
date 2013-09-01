@@ -2,12 +2,16 @@
 import sys
 import csv
 import time
+import win32com.client
+import win32clipboard
+
+product_codes = {}
+product_codes_sorted = []
+shell = win32com.client.Dispatch("WScript.Shell")
 
 def convert_to_xf1():
     input_filename = raw_input("Enter filename: ")
-    #filename = 'Test Price Export.TXT'
     product_code_prefix = raw_input("Enter product code prefix: ")
-    #product_code_prefix = '66'
 
     t = time.localtime()
     formated_date = time.strftime('%m%d%y', t)
@@ -39,11 +43,47 @@ def convert_to_xf1():
                 product_code = product_code.zfill(4)
                 if product_code not in prefix_exclusions:
                     product_code = product_code_prefix + product_code
+                product_codes[product_code] = True
+                product_codes_sorted.append(product_code)
                 f.write((product_code).rjust(12))
                 price_ton = float(row[2].strip())
                 price = "%.4f" % round(price_ton/20 ,4)
                 f.write(price.rjust(12))
                 f.write(product_code.rjust(128))
                 f.write('\r\n')
+        product_codes_sorted.sort()
+
+def copy_and_get_clipboard_data():
+    shell.SendKeys("^c", 0)
+    time.sleep(0.1)
+    win32clipboard.OpenClipboard()
+    data = win32clipboard.GetClipboardData()
+    win32clipboard.CloseClipboard()
+    return data
+
+def ingredient_selection():
+    raw_input("Press enter when ready for ingredient selection")
+    time.sleep(5)
+
+    last_data = ''
+    data = copy_and_get_clipboard_data()
+    shell.SendKeys("{DOWN}", 0)
+    max_product_code = product_codes_sorted[-1]
+
+    found = 0
+    while data < max_product_code and data != last_data:
+        last_data = data
+        data = copy_and_get_clipboard_data()
+        if data in product_codes:
+            print "%s found" % data
+            shell.SendKeys("{LEFT}", 0)
+            shell.SendKeys(" ", 0)
+            shell.SendKeys("{RIGHT}", 0)
+            found = found + 1
+        shell.SendKeys("{DOWN}", 0)
+    print "%d codes in file" % len(product_codes_sorted)
+    print "%d codes found and selected" % found
+    raw_input("Press enter to quit")
 
 convert_to_xf1()
+ingredient_selection()
