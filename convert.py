@@ -107,7 +107,7 @@ def convert_ingredient_list():
                             exception_fh.write("Cost not found for " + product_number + " (" + row[1] + ") @ " + loc)
                             exception_fh.write('\r\n')
 
-            print "Exception report written to %s" % exception_file
+        print "Exception report written to %s" % exception_file
         print "Cost output written to %s" % output_filename
         print "%d costs for Adams Center (550 / 64)" % counts_by_plant['550']
         print "%d costs for Augusta (560 / 61)" % counts_by_plant['560']
