@@ -63,7 +63,7 @@ def convert_ingredient_list():
 
 
         plant_file_560 = get_required_file("Choose Brill ingredient list for Augusta (560 / 61)")
-        while(raw_input("\r\nAre you sure this file is correct for Augusta (560 / 61)? [y/n\r\n"+plant_file_560+" ").lower() != 'y'):
+        while(raw_input("\r\nAre you sure this file is correct for Augusta (560 / 61)? [y/n]\r\n"+plant_file_560+" ").lower() != 'y'):
             plant_file_560 = get_required_file("Choose Brill ingredient list for Augusta (560 / 61)")
 
         plant_file_570 = get_required_file("Choose Brill ingredient list for Brandon (570 / 68)")
@@ -191,7 +191,7 @@ def copy_and_get_clipboard_data():
 def ingredient_selection(product_codes, product_codes_sorted):
     try:
         print "You will have 5 seconds to select the code column of a row on the export screen."
-        input = raw_input("Press enter when ready for ingredient selection")
+        input = raw_input("Press enter when ready for ingredient selection, or n to skip: ")
 
         if input.lower() != 'n':
             time.sleep(5)
