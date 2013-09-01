@@ -35,7 +35,7 @@ def get_required_file(message):
 
 def read_product_cost():
     try:
-        input_filename = get_required_file("Choose Agris csv cost file: ")
+        input_filename = get_required_file("Choose Agris csv cost file")
         #input_filename = 'Misc Product Cost 8.30.13.csv'
         product_cost = {}
         with open(input_filename, 'rbU') as csvfile:
@@ -56,10 +56,10 @@ def read_product_cost():
 def convert_ingredient_list():
     try:
         product_cost = read_product_cost()
-        plant_file_550 = get_required_file("Choose Brill ingredient list for Adams Center (550 / 64): ")
-        plant_file_560 = get_required_file("Choose Brill ingredient list for Augusta (560 / 61): ")
-        plant_file_570 = get_required_file("Choose Brill ingredient list for Brandon (570 / 68): ")
-        plant_file_580 = get_required_file("Choose Brill ingredient list for Sangerfield (580 / 66): ")
+        plant_file_550 = get_required_file("Choose Brill ingredient list for Adams Center (550 / 64)")
+        plant_file_560 = get_required_file("Choose Brill ingredient list for Augusta (560 / 61)")
+        plant_file_570 = get_required_file("Choose Brill ingredient list for Brandon (570 / 68)")
+        plant_file_580 = get_required_file("Choose Brill ingredient list for Sangerfield (580 / 66)")
 
         plant_files = [
             [plant_file_550, '550'],
@@ -100,7 +100,7 @@ def convert_ingredient_list():
 
 def convert_to_xf1(product_code_prefix, plant_number, plant_name):
     try:
-        input_filename = get_required_file("Press enter to choose SS ingredient cost file for "+plant_name+" (" + plant_number + " / " + product_code_prefix + ") : ")
+        input_filename = get_required_file("Press enter to choose SS ingredient cost file for "+plant_name+" (" + plant_number + " / " + product_code_prefix + ")")
         #input_filename = 'BRANDON TEST MO 09.02.13.TXT'
 
         output_filename = 'Master'+formated_date+'Ing'+product_code_prefix+'.xf1'
