@@ -150,6 +150,7 @@ def copy_and_get_clipboard_data():
 
 def ingredient_selection(product_codes, product_codes_sorted):
     try:
+        print "You will have 5 seconds to select the code column of a row on the export screen."
         raw_input("Press enter when ready for ingredient selection")
         time.sleep(5)
 
