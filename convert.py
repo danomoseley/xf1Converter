@@ -1,5 +1,5 @@
 #!/usr/bin/python
-IS_WIN = True
+IS_WIN = False
 import sys, csv, time, os, pprint, traceback
 from Tkinter import Tk
 import Tkinter
@@ -42,9 +42,7 @@ def get_required_file_confirm(description):
 
     prompt = "\r\nAre you sure this file is correct for %s? [y/n]\r\n%s " % (description, input_file)
 
-    user_input = raw_input(prompt).lower()
-
-    while(user_input != 'y' and user_input != ''):
+    while(raw_input(prompt).lower() in ['y', '']):
         input_file = get_required_file_confirm(description)
     return input_file
 
