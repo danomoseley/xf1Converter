@@ -124,7 +124,7 @@ def convert_ingredient_list():
 
 def convert_to_xf1(product_code_prefix, plant_number, plant_name):
     try:
-        prompt = "Press enter to choose SS ingredient cost file for %s (%s / %s)" % (plant_name, plant_number, product_code_prefix)
+        prompt = "SS ingredient cost file for %s (%s / %s)" % (plant_name, plant_number, product_code_prefix)
         input_filename = get_required_file(prompt)
         #input_filename = 'BRANDON TEST MO 09.02.13.TXT'
 
