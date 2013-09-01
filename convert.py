@@ -81,7 +81,8 @@ def convert_ingredient_list():
             [plant_file_580, '580']
         ]
         f = open(directory+os.sep+'cost_output_'+formated_date+'.xf1','wb')
-        exception_fh = open(directory+os.sep+'cost_exception_report_'+formated_date+'.txt','wb')
+        exception_file = directory+os.sep+'cost_exception_report_'+formated_date+'.txt'
+        exception_fh = open(exception_file,'wb')
         counts_by_plant = {}
         for plant_file in plant_files:
             filepath = plant_file[0]
@@ -102,9 +103,10 @@ def convert_ingredient_list():
                             f.write('\r\n')
                             counts_by_plant[loc] = counts_by_plant[loc] + 1
                         else:
-                            print "Cost not found for " + product_number + " (" + row[1] + ") @ " + loc
                             exception_fh.write("Cost not found for " + product_number + " (" + row[1] + ") @ " + loc)
                             exception_fh.write('\r\n')
+
+                print "Exception report written to %s" % exception_file
         pprint.pprint(counts_by_plant)
     except Exception, e:
         print "Error encountered in convert_ingredient_list: " + str(e)
