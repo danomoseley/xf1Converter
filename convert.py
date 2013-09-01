@@ -170,7 +170,6 @@ def convert_to_xf1(product_code_prefix, plant_number, plant_name):
                     f.write(price.rjust(12))
                     f.write(product_code.rjust(128))
                     f.write('\r\n')
-                    print row
             product_codes_sorted.sort()
         if IS_WIN:
             ingredient_selection(product_codes, product_codes_sorted)
