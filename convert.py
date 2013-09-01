@@ -175,7 +175,7 @@ def ingredient_selection(product_codes, product_codes_sorted):
         print "You will have 5 seconds to select the code column of a row on the export screen."
         input = raw_input("Press enter when ready for ingredient selection")
 
-        if input.lower() not 'n':
+        if input.lower() != 'n':
             time.sleep(5)
 
             last_data = ''
