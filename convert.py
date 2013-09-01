@@ -42,7 +42,7 @@ def get_required_file_confirm(description):
 
     prompt = "\r\nAre you sure this file is correct for %s? [y/n]\r\n%s " % (description, input_file)
 
-    user_input = raw_input().lower()
+    user_input = raw_input(prompt).lower()
 
     while(user_input != 'y' and user_input != ''):
         input_file = get_required_file(description)
