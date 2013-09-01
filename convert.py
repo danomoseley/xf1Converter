@@ -51,6 +51,7 @@ def read_product_cost():
     except Exception, e:
         print "Error encountered in read_product_cost: " + str(e)
         print traceback.format_exc()
+        raw_input("Press enter to quit")
         sys.exit()
 
 def convert_ingredient_list():
@@ -96,6 +97,7 @@ def convert_ingredient_list():
     except Exception, e:
         print "Error encountered in convert_ingredient_list: " + str(e)
         print traceback.format_exc()
+        raw_input("Press enter to quit")
         sys.exit()
 
 def convert_to_xf1(product_code_prefix, plant_number, plant_name):
@@ -157,6 +159,7 @@ def convert_to_xf1(product_code_prefix, plant_number, plant_name):
     except Exception, e:
         print "Error encountered in convert_to_xf1: " + str(e)
         print traceback.format_exc()
+        raw_input("Press enter to quit")
         sys.exit()
 
 def copy_and_get_clipboard_data():
@@ -170,31 +173,33 @@ def copy_and_get_clipboard_data():
 def ingredient_selection(product_codes, product_codes_sorted):
     try:
         print "You will have 5 seconds to select the code column of a row on the export screen."
-        raw_input("Press enter when ready for ingredient selection")
-        time.sleep(5)
+        input = raw_input("Press enter when ready for ingredient selection")
 
-        last_data = ''
-        data = copy_and_get_clipboard_data()
-        shell.SendKeys("{DOWN}", 0)
-        max_product_code = product_codes_sorted[-1]
+        if input.lower() not 'n':
+            time.sleep(5)
 
-        found = 0
-        while data < max_product_code and data != last_data:
-            last_data = data
+            last_data = ''
             data = copy_and_get_clipboard_data()
-            if data in product_codes:
-                print "%s found" % data
-                shell.SendKeys("{LEFT}", 0)
-                shell.SendKeys(" ", 0)
-                shell.SendKeys("{RIGHT}", 0)
-                found = found + 1
             shell.SendKeys("{DOWN}", 0)
-        print "%d codes in file" % len(product_codes_sorted)
-        print "%d codes found and selected" % found
-        raw_input("Press enter to quit")
+            max_product_code = product_codes_sorted[-1]
+
+            found = 0
+            while data < max_product_code and data != last_data:
+                last_data = data
+                data = copy_and_get_clipboard_data()
+                if data in product_codes:
+                    print "%s found" % data
+                    shell.SendKeys("{LEFT}", 0)
+                    shell.SendKeys(" ", 0)
+                    shell.SendKeys("{RIGHT}", 0)
+                    found = found + 1
+                shell.SendKeys("{DOWN}", 0)
+            print "%d codes in file" % len(product_codes_sorted)
+            print "%d codes found and selected" % found
     except Exception, e:
         print "Error encountered in ingredient_selection: " + str(e)
         print traceback.format_exc()
+        raw_input("Press enter to quit")
         sys.exit()
 
 monthly = raw_input("Is this a monthly update? [y/n]: ")
@@ -204,3 +209,4 @@ convert_to_xf1('61', '560', 'Augusta Mill')
 convert_to_xf1('64', '550', 'Adams Center')
 convert_to_xf1('66', '580', 'Sangerfield Mill')
 convert_to_xf1('68', '570', 'Brandon Mill')
+raw_input("Press enter to quit")
