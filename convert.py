@@ -25,6 +25,7 @@ def get_required_file(message):
     root.deiconify()
     root.lift()
     root.focus_force()
+    print "Choose file for %s" % message 
     input_filename = askopenfilename(title=message)
     root.destroy()
 
@@ -36,10 +37,20 @@ def get_required_file(message):
             return get_required_file(message)
     return input_filename
 
+def get_required_file_confirm(description):
+    input_file = get_required_file(description)
+
+    prompt = "\r\nAre you sure this file is correct for %s? [y/n]\r\n%s " % (description, input_file)
+
+    user_input = raw_input().lower()
+
+    while(user_input != 'y' and user_input != ''):
+        input_file = get_required_file(description)
+    return input_file
+
 def read_product_cost():
     try:
-        input_filename = get_required_file("Choose Agris csv cost file")
-        #input_filename = 'Misc Product Cost 8.30.13.csv'
+        input_filename = get_required_file_confirm("Agris csv cost file")
         product_cost = {}
         with open(input_filename, 'rbU') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -60,21 +71,11 @@ def read_product_cost():
 def convert_ingredient_list():
     try:
         product_cost = read_product_cost()
-        plant_file_550 = get_required_file("Choose Brill ingredient list for Adams Center (550 / 64)")
-        while(raw_input("\r\nAre you sure this file is correct for Adams Center (550 / 64)? [y/n]\r\n"+plant_file_550+" ").lower() != 'y'):
-            plant_file_550 = get_required_file("Choose Brill ingredient list for Adams Center (550 / 64)")
-
-        plant_file_560 = get_required_file("Choose Brill ingredient list for Augusta (560 / 61)")
-        while(raw_input("\r\nAre you sure this file is correct for Augusta (560 / 61)? [y/n]\r\n"+plant_file_560+" ").lower() != 'y'):
-            plant_file_560 = get_required_file("Choose Brill ingredient list for Augusta (560 / 61)")
-
-        plant_file_570 = get_required_file("Choose Brill ingredient list for Brandon (570 / 68)")
-        while(raw_input("\r\nAre you sure this file is correct for Brandon (570 / 68)? [y/n]\r\n"+plant_file_570+" ").lower() != 'y'):
-            plant_file_570 = get_required_file("Choose Brill ingredient list for Brandon (570 / 68)")
-
-        plant_file_580 = get_required_file("Choose Brill ingredient list for Sangerfield (580 / 66)")
-        while(raw_input("\r\nAre you sure this file is correct for Sangerfield (580 / 66)? [y/n]\r\n"+plant_file_580+" ").lower() != 'y'):
-            plant_file_580 = get_required_file("Choose Brill ingredient list for Sangerfield (580 / 66)")
+        
+        plant_file_550 = get_required_file_confirm("Brill ingredient list for Adams Center (550 / 64)")
+        plant_file_560 = get_required_file_confirm("Brill ingredient list for Augusta (560 / 61)")
+        plant_file_570 = get_required_file_confirm("Brill ingredient list for Brandon (570 / 68)")
+        plant_file_580 = get_required_file_confirm("Brill ingredient list for Sangerfield (580 / 66)")
 
         plant_files = [
             [plant_file_550, '550'],
@@ -123,10 +124,11 @@ def convert_ingredient_list():
 
 def convert_to_xf1(product_code_prefix, plant_number, plant_name):
     try:
-        input_filename = get_required_file("Press enter to choose SS ingredient cost file for "+plant_name+" (" + plant_number + " / " + product_code_prefix + ")")
+        prompt = "Press enter to choose SS ingredient cost file for %s (%s / %s)" % (plant_name, plant_number, product_code_prefix)
+        input_filename = get_required_file(prompt)
         #input_filename = 'BRANDON TEST MO 09.02.13.TXT'
 
-        output_filename = 'Master'+formated_date+'Ing'+product_code_prefix+'.xf1'
+        output_filename = directory+os.sep+'Master%sIng%s.xf1' % (formated_date, product_code_prefix)
 
         prefix_exclusions = {}
         with open('exclusions.txt', 'rb') as exclusionsfile:
@@ -138,14 +140,14 @@ def convert_to_xf1(product_code_prefix, plant_number, plant_name):
         product_codes_sorted = []
         product_codes = {}
         with open(input_filename, 'rb') as csvfile:
-            f = open(directory+os.sep+output_filename,'wb')
+            f = open(output_filename,'wb')
             reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
             f.write('XF Version = 5\r\n')
             next(reader)
             next(reader)
             plant = next(reader)
 
-            if plant[0].lower() != plant_name.lower():
+            if plant and plant[0].lower() != plant_name.lower():
                 print "\r\n%s is for %s, %s expected" % (input_filename, plant[0], plant_name)
                 convert_to_xf1(product_code_prefix, plant_number, plant_name)
                 return False
@@ -163,7 +165,7 @@ def convert_to_xf1(product_code_prefix, plant_number, plant_name):
                     if product_code not in prefix_exclusions:
                         product_code = product_code_prefix + product_code
                     else:
-                        print "Skipping prefix for " + product_code
+                        print "Skipping prefix for %s" % product_code
                     product_codes[product_code] = True
                     product_codes_sorted.append(product_code)
                     f.write((product_code).rjust(12))
@@ -193,9 +195,9 @@ def copy_and_get_clipboard_data():
 def ingredient_selection(product_codes, product_codes_sorted):
     try:
         print "You will have 5 seconds to select the code column of a row on the export screen."
-        input = raw_input("Press enter when ready for ingredient selection, or n to skip: ")
+        user_input = raw_input("Press enter when ready for ingredient selection, or n to skip: ").lower()
 
-        if input.lower() != 'n':
+        if user_input != 'n':
             time.sleep(5)
 
             last_data = ''
