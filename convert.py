@@ -107,13 +107,12 @@ def convert_ingredient_list():
                             exception_fh.write("Cost not found for " + product_number + " (" + row[1] + ") @ " + loc)
                             exception_fh.write('\r\n')
 
-        print "Exception report written to %s" % exception_file
-        print "Cost output written to %s" % output_filename
+        print "\r\nException report written to %s" % exception_file
+        print "\r\nCost output written to %s" % output_filename
         print "%d costs for Adams Center (550 / 64)" % counts_by_plant['550']
         print "%d costs for Augusta (560 / 61)" % counts_by_plant['560']
         print "%d costs for Brandon (570 / 68)" % counts_by_plant['570']
         print "%d costs for Sangerfield (580 / 66)" % counts_by_plant['580']
-        pprint.pprint(counts_by_plant)
     except Exception, e:
         print "Error encountered in convert_ingredient_list: " + str(e)
         print traceback.format_exc()
