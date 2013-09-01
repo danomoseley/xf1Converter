@@ -1,6 +1,6 @@
 #!/usr/bin/python
 IS_WIN = True
-import sys, csv, time, os, pprint
+import sys, csv, time, os, pprint, traceback
 from Tkinter import Tk
 from tkFileDialog import askopenfilename
 if IS_WIN:
@@ -16,9 +16,8 @@ directory = formated_date
 if not os.path.exists(directory):
     os.makedirs(directory)
 
-Tk().withdraw()
-
 def get_required_file(message):
+    Tk().withdraw()
     input_filename = askopenfilename(title=message)
     if not input_filename:
         print "Missing required file, exiting."
@@ -34,39 +33,40 @@ def read_product_cost():
             reader = csv.reader(csvfile, delimiter=',', quotechar='|')
             for row in reader:
                 if row[0] != 'ITE' and row[0] != 'LOC':
-                    loc = row[0].replace('\xff', '')
-                    item_number = row[3].replace('\xff', '')
+                    loc = row[0].replace(u'\xff', u'').replace(u'\xa0',u'').strip()
+                    item_number = row[3].replace(u'\xff', u'').replace(u'\xa0', u'')
                     if loc not in product_cost:
                         product_cost[loc] = {}
                     product_cost[loc][item_number] = float(row[10])
         return product_cost
-    except Exception:
+    except Exception, e:
         print "Error encountered in read_product_cost: " + str(e)
+        print traceback.format_exc()
         sys.exit()
 
 def convert_ingredient_list():
     try:
         product_cost = read_product_cost()
-        plant_file_550 = get_required_file("Choose Brill ingredient list for Adams Center (550): ")
-        plant_file_560 = get_required_file("Choose Brill ingredient list for Augusta (560): ")
-        plant_file_570 = get_required_file("Choose Brill ingredient list for Brandon (570): ")
-        plant_file_580 = get_required_file("Choose Brill ingredient list for Sangerfield (580): ")
+        plant_file_550 = get_required_file("Choose Brill ingredient list for Adams Center (550 / 64): ")
+        plant_file_560 = get_required_file("Choose Brill ingredient list for Augusta (560 / 61): ")
+        plant_file_570 = get_required_file("Choose Brill ingredient list for Brandon (570 / 68): ")
+        plant_file_580 = get_required_file("Choose Brill ingredient list for Sangerfield (580 / 66): ")
 
         plant_files = [
-            plant_file_550,
-            plant_file_560,
-            plant_file_570,
-            plant_file_580
+            [plant_file_550, '550'],
+            [plant_file_560, '560'],
+            [plant_file_570, '570'],
+            [plant_file_580, '580']
         ]
         f = open(directory+os.sep+'cost_output_'+formated_date+'.xf1','wb')
         exception_fh = open(directory+os.sep+'cost_exception_report_'+formated_date+'.txt','wb')
         counts_by_plant = {}
-        for filepath in plant_files:
+        for plant_file in plant_files:
+            filepath = plant_file[0]
             with open(filepath, 'rb') as csvfile:
                 reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
                 next(reader)
-                parts = filepath.replace('.TXT','').split(' ')
-                loc = parts[2].strip()
+                loc = plant_file[1]
                 counts_by_plant[loc] = 0
                 for row in reader:
                     product_number = row[0].strip()
@@ -80,17 +80,18 @@ def convert_ingredient_list():
                             f.write('\r\n')
                             counts_by_plant[loc] = counts_by_plant[loc] + 1
                         else:
-                            print "Cost not found for " + product_number + " @ " + loc
+                            print "Cost not found for " + product_number + " (" + row[1] + ") @ " + loc
                             exception_fh.write("Cost not found for " + product_number + " (" + row[1] + ") @ " + loc)
                             exception_fh.write('\r\n')
         pprint.pprint(counts_by_plant)
-    except Exception:
+    except Exception, e:
         print "Error encountered in convert_ingredient_list: " + str(e)
+        print traceback.format_exc()
         sys.exit()
 
-def convert_to_xf1(product_code_prefix, plant_name):
+def convert_to_xf1(product_code_prefix, plant_number, plant_name):
     try:
-        input_filename = get_required_file("Press enter to choose SS ingredient cost file for "+plant_name+": ")
+        input_filename = get_required_file("Press enter to choose SS ingredient cost file for "+plant_name+" (" + plant_number + " / " + product_code_prefix + ") : ")
         #input_filename = 'BRANDON TEST MO 09.02.13.TXT'
 
         output_filename = 'Master'+formated_date+'Ing'+product_code_prefix+'.xf1'
@@ -110,7 +111,12 @@ def convert_to_xf1(product_code_prefix, plant_name):
             f.write('XF Version = 5\r\n')
             next(reader)
             next(reader)
-            next(reader)
+            plant = next(reader)
+
+            if plant.lower() != plant_name.lower():
+                convert_to_xf1(product_code_prefix, plant_number, plant_name)
+                return false
+
             next(reader)
             next(reader)
             next(reader)
@@ -133,11 +139,14 @@ def convert_to_xf1(product_code_prefix, plant_name):
                     f.write(price.rjust(12))
                     f.write(product_code.rjust(128))
                     f.write('\r\n')
+                    print row
             product_codes_sorted.sort()
         if IS_WIN:
             ingredient_selection(product_codes, product_codes_sorted)
-    except Exception:
+        return True
+    except Exception, e:
         print "Error encountered in convert_to_xf1: " + str(e)
+        print traceback.format_exc()
         sys.exit()
 
 def copy_and_get_clipboard_data():
@@ -175,12 +184,13 @@ def ingredient_selection(product_codes, product_codes_sorted):
         raw_input("Press enter to quit")
     except Exception, e:
         print "Error encountered in ingredient_selection: " + str(e)
+        print traceback.format_exc()
         sys.exit()
 
 monthly = raw_input("Is this a monthly update? [y/n]: ")
-if monthly == 'y':
+if monthly.lower() == 'y':
     convert_ingredient_list()
-convert_to_xf1('64', 'Adams Center')
-convert_to_xf1('61', 'Augusta')
-convert_to_xf1('68', 'Brandon')
-convert_to_xf1('66', 'Sangerfield')
+convert_to_xf1('61', '560', 'Augusta')
+convert_to_xf1('64', '550', 'Adams Center')
+convert_to_xf1('66', '580', 'Sangerfield')
+convert_to_xf1('68', '570', 'Brandon')
