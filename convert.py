@@ -58,9 +58,21 @@ def convert_ingredient_list():
     try:
         product_cost = read_product_cost()
         plant_file_550 = get_required_file("Choose Brill ingredient list for Adams Center (550 / 64)")
+        while(raw_input("Are you sure "+plant_file_550+" is correct for Adams Center (550 / 64)? [y/n]").lower() != 'y'):
+            plant_file_550 = get_required_file("Choose Brill ingredient list for Adams Center (550 / 64)")
+
+
         plant_file_560 = get_required_file("Choose Brill ingredient list for Augusta (560 / 61)")
+        while(raw_input("Are you sure "+plant_file_560+" is correct for Augusta (560 / 61)? [y/n]").lower() != 'y'):
+            plant_file_560 = get_required_file("Choose Brill ingredient list for Augusta (560 / 61)")
+
         plant_file_570 = get_required_file("Choose Brill ingredient list for Brandon (570 / 68)")
+        while(raw_input("Are you sure "+plant_file_570+" is correct for Brandon (570 / 68)? [y/n]").lower() != 'y'):
+            plant_file_570 = get_required_file("Choose Brill ingredient list for Brandon (570 / 68)")
+
         plant_file_580 = get_required_file("Choose Brill ingredient list for Sangerfield (580 / 66)")
+        while(raw_input("Are you sure "+plant_file_580+" is correct for Sangerfield (580 / 66)? [y/n]").lower() != 'y'):
+            plant_file_580 = get_required_file("Choose Brill ingredient list for Sangerfield (580 / 66)")
 
         plant_files = [
             [plant_file_550, '550'],
