@@ -52,7 +52,7 @@ def read_product_cost():
                                            ("All files", "*.*") ))
         product_cost = {}
         with open(input_filename, 'rbU') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            reader = csv.reader(csvfile, delimiter=',', quotechar='"')
             for row in reader:
                 if row[0] != 'ITE' and row[0] != 'LOC':
                     loc = row[0].replace('\xff', '').replace('\xa0','').strip()
@@ -76,7 +76,7 @@ def convert_cost_list(product_costs):
 
     for cost_list_file in cost_list_files:
         with open(cost_list_file, 'rb') as csvfile:
-            reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
+            reader = csv.reader(csvfile, delimiter='\t', quotechar='"')
             for i in range(5):
                 next(reader)
             for row in reader:
@@ -89,7 +89,7 @@ def convert_cost_list(product_costs):
 
                     product_code_parts = full_product_code.split('-')
                     product_code = full_product_code
-                    product_cost = None
+                    product_cost = 'N/A'
 
                     if product_code_parts and len(product_code_parts) > 1:
                         plant_letter = product_code_parts[0].strip()
@@ -98,13 +98,9 @@ def convert_cost_list(product_costs):
                             plant_number = '580'
                         elif plant_letter.lower() == 'a':
                             plant_number = '560'
-                    else:
-                        plant_number = '580'
-
-                    if product_code in product_costs[plant_number]:
-                        product_cost = product_costs[plant_number][product_code]
-                    else:
-                        product_cost = 'N/A'
+                        if plant_number:
+                            if product_code in product_costs[plant_number]:
+                                product_cost = product_costs[plant_number][product_code]
 
                     products[full_product_code] = {
                         'full_code': full_product_code,
@@ -120,12 +116,12 @@ def convert_cost_list(product_costs):
 
     with open(cost_report_filename, 'wb') as cost_report_fh:
         csvwriter = csv.writer(cost_report_fh, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
         csvwriter.writerow(['Product Code', 'Product Description', 'Size', 'Cost', 'Extended Cost'])
 
         for k, product in ordered_products.iteritems():
             if product['cost'] != 'N/A':
-                extended_product_cost = "%.4f" % round(((float(product['cost'])/2000)*product_size)/20 ,4)
+                extended_product_cost = "%.4f" % round(((float(product['cost'])/2000)*product_size) ,4)
             else:
                 extended_product_cost = 'N/A'
             csvwriter.writerow([product['full_code'], product['description'], product['size'], product['cost'], extended_product_cost])
@@ -156,7 +152,7 @@ def convert_ingredient_list():
         for plant_file in plant_files:
             filepath = plant_file[0]
             with open(filepath, 'rb') as csvfile:
-                reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
+                reader = csv.reader(csvfile, delimiter='\t', quotechar='"')
                 next(reader)
                 loc = plant_file[1]
                 counts_by_plant[loc] = 0
@@ -197,7 +193,7 @@ def convert_to_xf1(product_code_prefix, plant_number, plant_name):
 
         prefix_exclusions = {}
         with open('exclusions.txt', 'rb') as exclusionsfile:
-            reader = csv.reader(exclusionsfile, delimiter=',', quotechar='|')
+            reader = csv.reader(exclusionsfile, delimiter=',', quotechar='"')
             for row in reader:
                 if row[0]:
                     prefix_exclusions[row[0]] = True
@@ -206,7 +202,7 @@ def convert_to_xf1(product_code_prefix, plant_number, plant_name):
         product_codes = {}
         with open(input_filename, 'rb') as csvfile:
             f = open(output_filename,'wb')
-            reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
+            reader = csv.reader(csvfile, delimiter='\t', quotechar='"')
             f.write('XF Version = 5\r\n')
             next(reader)
             next(reader)
