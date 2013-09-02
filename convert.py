@@ -1,6 +1,6 @@
 #!/usr/bin/python
 IS_WIN = False
-import sys, csv, time, os, pprint, traceback
+import sys, csv, time, os, pprint, traceback, collections
 from Tkinter import Tk
 import Tkinter
 from tkFileDialog import askopenfilename
@@ -26,7 +26,7 @@ def get_required_file(message, filetypes=None):
     root.lift()
     root.focus_force()
     print "Choose file for %s" % message 
-    input_filename = askopenfilename(title=message, filetypes=filetypes)
+    input_filename = askopenfilename(title=message)
     root.destroy()
 
     if not input_filename:
@@ -67,9 +67,75 @@ def read_product_cost():
         raw_input("Press enter to quit")
         sys.exit()
 
+def convert_cost_list(product_costs):
+    cost_list_files = []
+    cost_list_files.append(get_required_file_confirm("cost list for NY"))
+    cost_list_files.append(get_required_file_confirm("cost list for NE"))
+
+    products = {}
+
+    for cost_list_file in cost_list_files:
+        with open(cost_list_file, 'rb') as csvfile:
+            reader = csv.reader(csvfile, delimiter='\t', quotechar='|')
+            for i in range(5):
+                next(reader)
+            for row in reader:
+                if row:
+                    if row[0].lower() == 'product' or row[0].lower() == 'code' or len(row) == 1:
+                        continue
+                    full_product_code = row[0].strip()
+                    product_description = row[1].strip()
+                    product_size = int(row[2])
+
+                    product_code_parts = full_product_code.split('-')
+                    product_code = full_product_code
+                    product_cost = None
+
+                    if product_code_parts and len(product_code_parts) > 1:
+                        plant_letter = product_code_parts[0].strip()
+                        product_code = product_code_parts[1]
+                        if plant_letter.lower() == 's':
+                            plant_number = '580'
+                        elif plant_letter.lower() == 'a':
+                            plant_number = '560'
+                    else:
+                        plant_number = '580'
+
+                    if product_code in product_costs[plant_number]:
+                        product_cost = product_costs[plant_number][product_code]
+                    else:
+                        product_cost = 'N/A'
+
+                    products[full_product_code] = {
+                        'full_code': full_product_code,
+                        'code': product_code,
+                        'description': product_description,
+                        'cost': product_cost,
+                        'size': product_size
+                    }
+
+    ordered_products = collections.OrderedDict(sorted(products.items()))
+
+    cost_report_filename = directory+os.sep+'cost_report_'+formated_date+'.csv'
+
+    with open(cost_report_filename, 'wb') as cost_report_fh:
+        csvwriter = csv.writer(cost_report_fh, delimiter=',',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        csvwriter.writerow(['Product Code', 'Product Description', 'Size', 'Cost', 'Extended Cost'])
+
+        for k, product in ordered_products.iteritems():
+            if product['cost'] != 'N/A':
+                extended_product_cost = "%.4f" % round(((float(product['cost'])/2000)*product_size)/20 ,4)
+            else:
+                extended_product_cost = 'N/A'
+            csvwriter.writerow([product['full_code'], product['description'], product['size'], product['cost'], extended_product_cost])
+
+    print "\r\nCost report written to %s" % cost_report_filename 
+
 def convert_ingredient_list():
     try:
         product_cost = read_product_cost()
+        convert_cost_list(product_cost)
         
         plant_file_550 = get_required_file_confirm("Brill ingredient list for Adams Center (550 / 64)")
         plant_file_560 = get_required_file_confirm("Brill ingredient list for Augusta (560 / 61)")
