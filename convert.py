@@ -112,7 +112,7 @@ def convert_cost_list(product_costs):
 
     ordered_products = collections.OrderedDict(sorted(products.items()))
 
-    cost_report_filename = directory+os.sep+'cost_report_'+formated_date+'.csv'
+    cost_report_filename = directory+os.sep+'misc_ingredient_report_'+formated_date+'.csv'
 
     with open(cost_report_filename, 'wb') as cost_report_fh:
         csvwriter = csv.writer(cost_report_fh, delimiter=',',
