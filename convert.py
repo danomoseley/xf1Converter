@@ -1,5 +1,5 @@
 #!/usr/bin/python
-IS_WIN = False
+IS_WIN = True
 import sys, csv, time, os, pprint, traceback, collections
 from Tkinter import Tk
 import Tkinter
