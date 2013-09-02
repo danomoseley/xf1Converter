@@ -17,7 +17,7 @@ directory = formated_date
 if not os.path.exists(directory):
     os.makedirs(directory)
 
-def get_required_file(message):
+def get_required_file(message, filetypes=None):
     root = Tkinter.Tk()
     root.withdraw()
     root.overrideredirect(True)
@@ -26,7 +26,7 @@ def get_required_file(message):
     root.lift()
     root.focus_force()
     print "Choose file for %s" % message 
-    input_filename = askopenfilename(title=message)
+    input_filename = askopenfilename(title=message, filetypes=filetypes)
     root.destroy()
 
     if not input_filename:
@@ -37,18 +37,19 @@ def get_required_file(message):
             return get_required_file(message)
     return input_filename
 
-def get_required_file_confirm(description):
+def get_required_file_confirm(description, filetypes=None):
     input_file = get_required_file(description)
 
     prompt = "\r\nAre you sure this file is correct for %s? [y/n]\r\n%s " % (description, input_file)
 
     while(raw_input(prompt).lower() not in ['y', '']):
-        input_file = get_required_file(description)
+        input_file = get_required_file(description, filetypes)
     return input_file
 
 def read_product_cost():
     try:
-        input_filename = get_required_file_confirm("Agris csv cost file")
+        input_filename = get_required_file_confirm("Agris csv cost file", filetypes=(("CSV", "*.csv"),
+                                           ("All files", "*.*") ))
         product_cost = {}
         with open(input_filename, 'rbU') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='|')
