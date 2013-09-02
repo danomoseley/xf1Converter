@@ -288,8 +288,10 @@ def ingredient_selection(product_codes, product_codes_sorted):
 monthly = raw_input("Is this a monthly update? [y/n]: ")
 if monthly.lower() in ['y','']:
     convert_ingredient_list()
+    process_ss = raw_input("Process Solid Solutions? [y/n]: ")
+else:
+    process_ss = 'y'
 
-process_ss = raw_input("Process Solid Solutions? [y/n]: ")
 if process_ss.lower() in ['y','']:
     convert_to_xf1('61', '560', 'Augusta Mill')
     convert_to_xf1('64', '550', 'Adams Center')
