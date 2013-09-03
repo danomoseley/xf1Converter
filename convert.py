@@ -1,10 +1,14 @@
 #!/usr/bin/python
 import sys, csv, time, os, pprint, traceback, collections, platform
+from subprocess import call
 from Tkinter import Tk
 import Tkinter
 from tkFileDialog import askopenfilename
 IS_WIN = platform.system().lower() == 'windows'
 
+print 'Checking for new version'
+call(["git", "pull"])
+print '\r\n'
 
 if IS_WIN:
     import win32com.client
