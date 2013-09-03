@@ -14,6 +14,8 @@ if not 'Already up-to-date.' in out:
     print 'Version updated, restarting'
     python = sys.executable
     os.execl(python, python, * sys.argv)
+else:
+    print 'Up to date'
 
 if IS_WIN:
     import win32com.client
