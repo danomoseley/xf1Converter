@@ -6,7 +6,7 @@ import Tkinter
 from tkFileDialog import askopenfilename
 IS_WIN = platform.system().lower() == 'windows'
 
-print 'Checking for new version'
+print 'Checking for latest version'
 p = subprocess.Popen(["git", "pull"], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 out, err = p.communicate()
 if not 'Already up-to-date.' in out:
