@@ -9,6 +9,7 @@ IS_WIN = platform.system().lower() == 'windows'
 print 'Checking for new version'
 call(["git", "pull"])
 print '\r\n'
+print 'Test'
 
 if IS_WIN:
     import win32com.client
