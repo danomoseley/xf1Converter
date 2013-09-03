@@ -34,6 +34,8 @@ nosetests.xml
 .project
 .pydevproject
 
+.DS_STORE
+
 *.TXT
 *.xf1
 *.csv
