@@ -15,7 +15,6 @@ var
 sdist
 develop-eggs
 .installed.cfg
-lib
 lib64
 
 # Installer logs
@@ -39,3 +38,4 @@ nosetests.xml
 *.TXT
 *.xf1
 *.csv
+static/uploads/*
