@@ -1,15 +1,19 @@
 #!/usr/bin/python
 import sys, csv, time, os, pprint, traceback, collections, platform
-from subprocess import call
+import subprocess
 from Tkinter import Tk
 import Tkinter
 from tkFileDialog import askopenfilename
 IS_WIN = platform.system().lower() == 'windows'
 
+
 print 'Checking for new version'
-call(["git", "pull"])
-print '\r\n'
-print 'Test'
+p = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE)
+out, err = p.communicate()
+if not 'Already up-to-date.' in out:
+    print 'Version updated, restarting'
+    python = sys.executable
+    os.execl(python, python, * sys.argv)
 
 if IS_WIN:
     import win32com.client
