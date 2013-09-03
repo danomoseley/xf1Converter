@@ -8,7 +8,7 @@ IS_WIN = platform.system().lower() == 'windows'
 
 
 print 'Checking for new version'
-p = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE)
+p = subprocess.Popen(["git", "pull"], shell=False, stdout=subprocess.PIPE)
 out, err = p.communicate()
 if not 'Already up-to-date.' in out:
     print 'Version updated, restarting'
