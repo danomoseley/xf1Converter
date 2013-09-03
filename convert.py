@@ -1,9 +1,11 @@
 #!/usr/bin/python
-IS_WIN = True
-import sys, csv, time, os, pprint, traceback, collections
+import sys, csv, time, os, pprint, traceback, collections, platform
 from Tkinter import Tk
 import Tkinter
 from tkFileDialog import askopenfilename
+IS_WIN = platform.system().lower() == 'windows'
+
+
 if IS_WIN:
     import win32com.client
     import win32clipboard
