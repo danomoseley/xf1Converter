@@ -2,7 +2,6 @@
     <head>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="js/main.js"></script>
-        <script type='text/javascript' src='js/lib/persist-js/persist-min.js'></script>
         <!-- Force latest IE rendering engine or ChromeFrame if installed -->
         <!--[if IE]>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -18,6 +17,7 @@
         <link rel="stylesheet" href="/static/js/lib/jquery-file-upload/css/jquery.fileupload-ui.css">
         <!-- CSS adjustments for browsers with JavaScript disabled -->
         <noscript><link rel="stylesheet" href="/static/js/lib/jquery-file-upload/css/jquery.fileupload-ui-noscript.css"></noscript>
+        <link rel="stylesheet" href="/static/js/lib/colorbox-master/example1/colorbox.css">
     </head>
     <body>
         <form id="fileupload" action="/upload" method="POST" enctype="multipart/form-data">
@@ -60,6 +60,8 @@
         <!-- The table listing the files available for upload/download -->
         <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
     </form>
+    <div id='fileList'></div>
+    <input type="submit" id="process-ss"><Process/input>
     </body>
     <!-- The template to display files available for upload -->
     <script id="template-upload" type="text/x-tmpl">
@@ -169,6 +171,7 @@
     <script src="/static/js/lib/jquery-file-upload/js/jquery.fileupload-validate.js"></script>
     <!-- The File Upload user interface plugin -->
     <script src="/static/js/lib/jquery-file-upload/js/jquery.fileupload-ui.js"></script>
+    <script src="/static/js/lib/colorbox-master/jquery.colorbox-min.js"></script>
     <!-- The XDomainRequest Transport is included for cross-domain file deletion for IE 8 and IE 9 -->
     <!--[if (gte IE 8)&(lt IE 10)]>
     <script src="js/cors/jquery.xdr-transport.js"></script>

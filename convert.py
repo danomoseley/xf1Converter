@@ -2,7 +2,7 @@
 from flask import Flask, request, url_for, jsonify
 app = Flask(__name__)
 
-import sys, csv, time, os, pprint, traceback, collections, platform, json
+import sys, csv, time, os, pprint, traceback, collections, platform, json, datetime
 import subprocess
 from Tkinter import Tk
 import Tkinter
@@ -71,7 +71,8 @@ def upload():
             pprint.pprint(upload_file)
             return_files.append({
                 'url': file_url,
-                'name': file_name
+                'name': file_name,
+                'modified': unicode(datetime.datetime.now())
             })
         return json.dumps({'files':return_files})
 
