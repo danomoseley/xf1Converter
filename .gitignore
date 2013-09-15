@@ -39,3 +39,5 @@ nosetests.xml
 *.TXT
 *.xf1
 *.csv
+!sample files/*
+sample files/.DS_STORE
