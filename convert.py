@@ -157,31 +157,31 @@ def convert_ingredient_list():
             [plant_file_580, '580']
         ]
         output_filename = directory+os.sep+'cost_output_'+formated_date+'.xf1'
-        f = open(output_filename,'wb')
-        exception_file = directory+os.sep+'cost_exception_report_'+formated_date+'.txt'
-        exception_fh = open(exception_file,'wb')
-        counts_by_plant = {}
-        for plant_file in plant_files:
-            filepath = plant_file[0]
-            with open(filepath, 'rb') as csvfile:
-                reader = csv.reader(csvfile, delimiter='\t', quotechar='"')
-                next(reader)
-                loc = plant_file[1]
-                counts_by_plant[loc] = 0
-                for row in reader:
-                    product_number = row[0].strip()
-                    if product_number != 'Code':
-                        if product_number in product_cost[loc]:
-                            cost_ton = product_cost[loc][product_number]
-                            cost = "%.4f" % round(cost_ton/20 ,4)
-                            f.write('IP'+loc)
-                            f.write(product_number.rjust(10))
-                            f.write(cost.rjust(12))
-                            f.write('\r\n')
-                            counts_by_plant[loc] = counts_by_plant[loc] + 1
-                        else:
-                            exception_fh.write("Cost not found for " + product_number + " (" + row[1] + ") @ " + loc)
-                            exception_fh.write('\r\n')
+        with open(output_filename,'wb') as cost_output_fh:
+            exception_file = directory+os.sep+'cost_exception_report_'+formated_date+'.txt'
+            with open(exception_file,'wb') as exception_fh:
+                counts_by_plant = {}
+                for plant_file in plant_files:
+                    filepath = plant_file[0]
+                    with open(filepath, 'rb') as csvfile:
+                        reader = csv.reader(csvfile, delimiter='\t', quotechar='"')
+                        next(reader)
+                        loc = plant_file[1]
+                        counts_by_plant[loc] = 0
+                        for row in reader:
+                            product_number = row[0].strip()
+                            if product_number != 'Code':
+                                if product_number in product_cost[loc]:
+                                    cost_ton = product_cost[loc][product_number]
+                                    cost = "%.4f" % round(cost_ton/20 ,4)
+                                    cost_output_fh.write('IP'+loc)
+                                    cost_output_fh.write(product_number.rjust(10))
+                                    cost_output_fh.write(cost.rjust(12))
+                                    cost_output_fh.write('\r\n')
+                                    counts_by_plant[loc] = counts_by_plant[loc] + 1
+                                else:
+                                    exception_fh.write("Cost not found for " + product_number + " (" + row[1] + ") @ " + loc)
+                                    exception_fh.write('\r\n')
 
         print "\r\nException report written to %s" % exception_file
         print "\r\nCost output written to %s" % output_filename
@@ -199,69 +199,70 @@ def convert_to_xf1(plants):
     try:
         plant_product_codes = {}
         output_filename = directory+os.sep+'Master%sIng.xf1' % formated_date
-        f = open(output_filename,'wb')
-        f.write('XF Version = 5\r\n')
+        with open(output_filename,'wb') as output_master_fh:
+            output_master_fh.write('XF Version = 5\r\n')
 
-        prefix_exclusions = {}
-        with open('exclusions.txt', 'rb') as exclusionsfile:
-            reader = csv.reader(exclusionsfile, delimiter=',', quotechar='"')
-            for row in reader:
-                if row[0]:
-                    prefix_exclusions[row[0]] = True
+            prefix_exclusions = {}
+            with open('exclusions.txt', 'rb') as exclusionsfile:
+                reader = csv.reader(exclusionsfile, delimiter=',', quotechar='"')
+                for row in reader:
+                    if row[0]:
+                        prefix_exclusions[row[0]] = True
 
-
-        for plant in plants:
-            reader = None
-            valid_input_file = False
-            user_continue = True
-            while not valid_input_file and user_continue:
-                prompt = "SS ingredient cost file for %s (%s / %s)" % (plant['plant_name'], plant['plant_number'], plant['product_code_prefix'])
-                input_filename = get_required_file(prompt)
-                csvfile = open(input_filename, 'rb')
-                reader = csv.reader(csvfile, delimiter='\t', quotechar='"')
-                next(reader)
-                next(reader)
-                plant_name_line = next(reader)
-                input_file_plant_name = plant_name_line[0]
-                if input_file_plant_name.lower() != plant['plant_name'].lower():
-                    print "\r\n%s is for %s, %s expected" % (input_filename, input_file_plant_name, plant['plant_name'])
-                    prompt = "Try again for %s? [y/n]: " % plant['plant_name']
-                    user_input = raw_input(prompt)
-                    if user_input.lower() == 'n':
-                        user_continue = False
-                else:
-                    valid_input_file = True
-
-            next(reader)
-            next(reader)
-            next(reader)
-            product_codes_sorted = []
-            product_codes = {}
-            for row in reader:
-                if row:
-                    if row[0] == 'Product' or row[0] == 'Code':
-                        continue
-                    f.write('IP0')
-                    product_code = row[0].strip()
-                    product_code = product_code.zfill(4)
-                    if product_code not in prefix_exclusions:
-                        product_code = plant['product_code_prefix'] + product_code
+            for plant in plants:
+                reader = None
+                valid_input_file = False
+                user_continue = True
+                while not valid_input_file and user_continue:
+                    prompt = "SS ingredient cost file for %s (%s / %s)" % (plant['plant_name'], plant['plant_number'], plant['product_code_prefix'])
+                    input_filename = get_required_file(prompt)
+                    csvfile = open(input_filename, 'rb')
+                    reader = csv.reader(csvfile, delimiter='\t', quotechar='"')
+                    next(reader)
+                    next(reader)
+                    plant_name_line = next(reader)
+                    input_file_plant_name = plant_name_line[0]
+                    if input_file_plant_name.lower() != plant['plant_name'].lower():
+                        print "\r\n%s is for %s, %s expected" % (input_filename, input_file_plant_name, plant['plant_name'])
+                        prompt = "Try again for %s? [y/n]: " % plant['plant_name']
+                        user_input = raw_input(prompt)
+                        if user_input.lower() == 'n':
+                            user_continue = False
                     else:
-                        print "Skipping prefix for %s" % product_code
-                    product_codes[product_code] = True
-                    product_codes_sorted.append(product_code)
-                    f.write((product_code).rjust(12))
-                    price_ton = float(row[2].strip())
-                    price = "%.4f" % round(price_ton/20 ,4)
-                    f.write(price.rjust(12))
-                    f.write(product_code.rjust(128))
-                    f.write('\r\n')
+                        valid_input_file = True
 
-            product_codes_sorted.sort()
-            plant_product_codes[plant['plant_name']] = {
-                'product_codes': product_codes,
-                'product_codes_sorted': product_codes_sorted,
-            }
+                next(reader)
+                next(reader)
+                next(reader)
+                product_codes_sorted = []
+                product_codes = {}
+                for row in reader:
+                    if row:
+                        if row[0] == 'Product' or row[0] == 'Code':
+                            continue
+                        output_master_fh.write('IP0')
+                        product_code = row[0].strip()
+                        product_code = product_code.zfill(4)
+                        if product_code not in prefix_exclusions:
+                            product_code = plant['product_code_prefix'] + product_code
+                        else:
+                            print "Skipping prefix for %s" % product_code
+                        product_codes[product_code] = True
+                        product_codes_sorted.append(product_code)
+                        output_master_fh.write((product_code).rjust(12))
+                        price_ton = float(row[2].strip())
+                        price = "%.4f" % round(price_ton/20 ,4)
+                        output_master_fh.write(price.rjust(12))
+                        output_master_fh.write(product_code.rjust(128))
+                        output_master_fh.write('\r\n')
+
+                csvfile.close()
+
+                product_codes_sorted.sort()
+                plant_product_codes[plant['plant_name']] = {
+                    'product_codes': product_codes,
+                    'product_codes_sorted': product_codes_sorted,
+                }
 
         if IS_WIN:
             ingredient_selection(plant_product_codes)
