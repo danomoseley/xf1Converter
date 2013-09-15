@@ -209,10 +209,12 @@ def convert_to_xf1(plants):
                 if row[0]:
                     prefix_exclusions[row[0]] = True
 
+
         for plant in plants:
             reader = None
             valid_input_file = False
-            while not valid_input_file:
+            user_continue = True
+            while not valid_input_file and user_continue:
                 prompt = "SS ingredient cost file for %s (%s / %s)" % (plant['plant_name'], plant['plant_number'], plant['product_code_prefix'])
                 input_filename = get_required_file(prompt)
                 csvfile = open(input_filename, 'rb')
@@ -226,7 +228,7 @@ def convert_to_xf1(plants):
                     prompt = "Try again for %s? [y/n]: " % plant['plant_name']
                     user_input = raw_input(prompt)
                     if user_input.lower() == 'n':
-                        continue
+                        user_continue = False
                 else:
                     valid_input_file = True
 
