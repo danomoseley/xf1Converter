@@ -135,7 +135,7 @@ def convert_cost_list(product_costs):
 
         for k, product in ordered_products.iteritems():
             if product['cost'] != 'N/A':
-                extended_product_cost = "%.4f" % round(((float(product['cost'])/2000)*product_size) ,4)
+                extended_product_cost = "%.4f" % round(((float(product['cost'])/2000)*product['size']) ,4)
             else:
                 extended_product_cost = 'N/A'
             csvwriter.writerow([product['full_code'], product['description'], product['size'], product['cost'], extended_product_cost])
