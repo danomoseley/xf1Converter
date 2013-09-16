@@ -9,7 +9,10 @@ IS_WIN = platform.system().lower() == 'windows'
 print 'Checking for latest version'
 p = subprocess.Popen(["git", "pull"], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 out, err = p.communicate()
-if not 'Already up-to-date.' in out:
+if err:
+    print 'Error while updating'
+elif not ('Already up-to-date.' in out
+        or 'up to date' in out):
     print 'Version updated, restarting'
     python = sys.executable
     os.execl(python, python, * sys.argv)
