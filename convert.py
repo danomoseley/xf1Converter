@@ -200,7 +200,7 @@ def convert_ingredient_list():
 def convert_to_xf1(plants):
     try:
         plant_product_codes = {}
-        output_filename = directory+os.sep+'Master%sIng.xf1' % formated_date
+        output_filename = directory+os.sep+'MasterIng%s.xf1' % formated_date
         with open(output_filename,'wb') as output_master_fh:
             output_master_fh.write('XF Version = 5\r\n')
 
@@ -266,6 +266,9 @@ def convert_to_xf1(plants):
                     'product_codes_sorted': product_codes_sorted,
                 }
 
+        prompt = "\r\nSS Export file written to %s, press enter after importing" % output_filename
+        raw_input(prompt)
+
         if IS_WIN:
             ingredient_selection(plant_product_codes)
         return True
@@ -286,7 +289,7 @@ def copy_and_get_clipboard_data():
 def ingredient_selection(plant_product_codes):
     try:
         for plant_name in plant_product_codes:
-            print "You will have 5 seconds to select the code column of a row on the export screen."
+            print "You will have 5 seconds to select the code column of a row on the SS export screen."
             prompt = "Press enter when ready for ingredient selection for %s, or n to skip: " % plant_name
             user_input = raw_input(prompt)
 
