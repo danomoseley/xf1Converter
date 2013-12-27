@@ -1,10 +1,19 @@
 #!/usr/bin/python
-import sys, csv, time, os, traceback, collections, platform
+import sys, csv, time, os, traceback, collections, platform, math
 import subprocess
 from Tkinter import Tk
 import Tkinter
+import sqlite3
+db_conn = sqlite3.connect('xf1Converter.db')
+
+db_conn.execute('''CREATE TABLE IF NOT EXISTS product_cost_history
+       (date                   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        product_code           TEXT    NOT NULL,
+        extended_cost          REAL    NOT NULL);''')
+
 from tkFileDialog import askopenfilename
 IS_WIN = platform.system().lower() == 'windows'
+PERCENT_COST_CHANGE_LIMIT=25
 
 if IS_WIN:
     import win32com.client
@@ -130,20 +139,55 @@ def convert_cost_list(product_costs):
     ordered_products = collections.OrderedDict(sorted(products.items()))
 
     cost_report_filename = directory+os.sep+'misc_ingredient_report_'+formated_date+'.csv'
+    cost_exception_report_filename = directory+os.sep+'misc_ingredient_exception_report_'+formated_date+'.csv'
 
-    with open(cost_report_filename, 'wb') as cost_report_fh:
+    cost_exception_count = 0
+
+    with open(cost_report_filename, 'wb') as cost_report_fh, \
+        open(cost_exception_report_filename, 'wb') as cost_exception_report_fh:
         csvwriter = csv.writer(cost_report_fh, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        csv_exception_writer = csv.writer(cost_exception_report_fh, delimiter=',',
+                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
         csvwriter.writerow(['Product Code', 'Product Description', 'Size', 'Cost', 'Extended Cost'])
+        csv_exception_writer.writerow(['Product Code', 'Product Description', 'Size', 'Cost', 'Extended Cost', \
+            'Previous Extended Cost', 'Percent Change'])
 
         for k, product in ordered_products.iteritems():
             if product['cost'] != 'N/A':
                 extended_product_cost = "%.4f" % round(((float(product['cost'])/2000)*product['size']) ,4)
             else:
                 extended_product_cost = 'N/A'
-            csvwriter.writerow([product['full_code'], product['description'], product['size'], product['cost'], extended_product_cost])
+
+            cursor = db_conn.execute("SELECT product_code, extended_cost,date \
+                FROM product_cost_history WHERE product_code=? ORDER BY date desc LIMIT 1", [product['full_code']])
+            data = cursor.fetchall()
+            valid = True
+
+            if len(data):
+                last_product_cost = data[0][1]
+                percent_cost_change = 100 * (extended_product_cost - last_product_cost)/last_product_cost
+                if (math.fabs(percent_cost_change) > PERCENT_COST_CHANGE_LIMIT):
+                    csv_exception_writer.writerow([product['full_code'], product['description'], product['size'], \
+                        product['cost'], extended_product_cost, last_product_cost, percent_cost_change])
+                    valid = False
+                    cost_exception_count += 1
+
+            if valid:
+                csvwriter.writerow([product['full_code'], product['description'], product['size'], product['cost'], \
+                    extended_product_cost])
+
+            db_conn.execute("INSERT INTO product_cost_history (product_code,extended_cost) VALUES (?,?)", \
+                (product['full_code'],str(extended_product_cost)));
+            db_conn.commit()
 
     print "\r\nCost report written to %s" % cost_report_filename 
+
+    if cost_exception_count > 0:
+        print "\r\nCost exception report written to %s" % cost_exception_report_filename 
+    else:
+        os.unlink(cost_exception_report_filename)
 
 def convert_ingredient_list():
     try:
@@ -338,3 +382,4 @@ if process_ss.lower() in ['y','']:
     ])
 
 raw_input("Process complete. Press enter to quit")
+db_conn.close()
