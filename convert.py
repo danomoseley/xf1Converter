@@ -4,6 +4,7 @@ import subprocess
 from Tkinter import Tk
 import Tkinter
 from tkFileDialog import askopenfilename
+from git import *
 IS_WIN = platform.system().lower() == 'windows'
 
 if IS_WIN:
@@ -18,7 +19,10 @@ directory = formated_date
 if not os.path.exists(directory):
     os.makedirs(directory)
 
+repo = Repo(".")
+
 def update():
+    print 'Checking for latest version'
     p = subprocess.Popen(["git", "pull"], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = p.communicate()
     if err:
@@ -26,10 +30,35 @@ def update():
     elif not ('Already up-to-date.' in out
             or 'up to date' in out):
         print 'Version updated, restarting'
-        python = sys.executable
-        os.execl(python, python, * sys.argv)
+        restart()
     else:
         print 'Up to date'
+
+def restart():
+    python = sys.executable
+    os.execl(python, python, * sys.argv)
+
+def update_git_branch():
+    i = 1
+    for branch in repo.heads:
+        decorator = ''
+        if branch == repo.head.reference:
+            decorator = ' (current)'
+        print str(i) + ') ' + branch.name + decorator
+        i += 1
+
+    while True:
+        branch_index = raw_input("Enter branch number: ")
+        if branch_index == '':
+            break
+        try:
+            branch = repo.heads[int(branch_index) - 1]
+            branch.checkout()
+            print 'Branch updated, restarting'
+            restart()
+            break
+        except:
+            continue
 
 def get_required_file(message, filetypes=None):
     root = Tkinter.Tk()
@@ -320,10 +349,11 @@ def ingredient_selection(plant_product_codes):
         raw_input("Press enter to quit")
         sys.exit()
 
-print 'Checking for latest version'
 update()
 
 monthly = raw_input("Is this a monthly update? [y/n]: ")
+if monthly.lower() in ['f']:
+    update_git_branch()
 if monthly.lower() in ['y','']:
     convert_ingredient_list()
     process_ss = raw_input("Process Solid Solutions? [y/n]: ")
