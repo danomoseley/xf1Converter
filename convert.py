@@ -83,9 +83,9 @@ def read_product_cost():
 
 def convert_cost_list(product_costs):
     cost_list_files = []
-    cost_list_files.append(get_required_file_confirm("Misc Ingredient list for NY"))
-    cost_list_files.append(get_required_file_confirm("Misc Ingredient list for NE"))
     cost_list_files.append(get_required_file_confirm("Misc Ingredient list for Adams Center"))
+    cost_list_files.append(get_required_file_confirm("Misc Ingredient list for Sangerfield"))
+    cost_list_files.append(get_required_file_confirm("Misc Ingredient list for Augusta"))
 
     products = {}
 
