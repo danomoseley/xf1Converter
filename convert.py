@@ -86,6 +86,7 @@ def convert_cost_list(product_costs):
     cost_list_files.append(get_required_file_confirm("Misc Ingredient list for Adams Center"))
     cost_list_files.append(get_required_file_confirm("Misc Ingredient list for Sangerfield"))
     cost_list_files.append(get_required_file_confirm("Misc Ingredient list for Augusta"))
+    cost_list_files.append(get_required_file_confirm("Misc Ingredient list for Springville"))
 
     products = {}
 
@@ -115,6 +116,8 @@ def convert_cost_list(product_costs):
                             plant_number = '560'
                         elif plant_letter.lower() == 'c':
                             plant_number = '550'
+                        elif plant_letter.lower() == 'p':
+                            plant_number = '555'
                         if plant_number:
                             if product_code in product_costs[plant_number]:
                                 product_cost = product_costs[plant_number][product_code]
@@ -153,11 +156,13 @@ def convert_ingredient_list():
         plant_file_550 = get_required_file_confirm("Brill ingredient list for Adams Center (550 / 64)")
         plant_file_560 = get_required_file_confirm("Brill ingredient list for Augusta (560 / 61)")
         plant_file_580 = get_required_file_confirm("Brill ingredient list for Sangerfield (580 / 66)")
+        plant_file_555 = get_required_file_confirm("Brill ingredient list for Springville (555 / 55)")
 
         plant_files = [
             [plant_file_550, '550'],
             [plant_file_560, '560'],
-            [plant_file_580, '580']
+            [plant_file_580, '580'],
+            [plant_file_555, '555']
         ]
         output_filename = directory+os.sep+'cost_output_'+formated_date+'.xf1'
         with open(output_filename,'wb') as cost_output_fh:
@@ -191,6 +196,7 @@ def convert_ingredient_list():
         print "%d costs for Adams Center (550 / 64)" % counts_by_plant['550']
         print "%d costs for Augusta (560 / 61)" % counts_by_plant['560']
         print "%d costs for Sangerfield (580 / 66)" % counts_by_plant['580']
+        print "%d costs for Springville (555 / 55)" % counts_by_plant['555']
     except Exception, e:
         print "Error encountered in convert_ingredient_list: " + str(e)
         print traceback.format_exc()
@@ -334,7 +340,8 @@ if process_ss.lower() in ['y','']:
     convert_to_xf1([
         {'product_code_prefix': '61', 'plant_number': '560', 'plant_name': 'Augusta Mill'},
         {'product_code_prefix': '64', 'plant_number': '550', 'plant_name': 'Adams Center'},
-        {'product_code_prefix': '66', 'plant_number': '580', 'plant_name': 'Sangerfield Mill'}
+        {'product_code_prefix': '66', 'plant_number': '580', 'plant_name': 'Sangerfield Mill'},
+        {'product_code_prefix': '55', 'plant_number': '555', 'plant_name': 'Springville Mill'}
     ])
 
 raw_input("Process complete. Press enter to quit")
