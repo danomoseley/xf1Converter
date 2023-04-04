@@ -112,8 +112,6 @@ def convert_cost_list(product_costs):
                         product_code = product_code_parts[1]
                         if plant_letter.lower() == 's':
                             plant_number = '580'
-                        elif plant_letter.lower() == 'a':
-                            plant_number = '560'
                         elif plant_letter.lower() == 'c':
                             plant_number = '550'
                         elif plant_letter.lower() == 'p':
