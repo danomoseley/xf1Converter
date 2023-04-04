@@ -85,7 +85,6 @@ def convert_cost_list(product_costs):
     cost_list_files = []
     cost_list_files.append(get_required_file_confirm("Misc Ingredient list for Adams Center"))
     cost_list_files.append(get_required_file_confirm("Misc Ingredient list for Sangerfield"))
-    cost_list_files.append(get_required_file_confirm("Misc Ingredient list for Augusta"))
     cost_list_files.append(get_required_file_confirm("Misc Ingredient list for Springville"))
     cost_list_files.append(get_required_file_confirm("Misc Ingredient list for Strykersville"))
 
@@ -113,8 +112,6 @@ def convert_cost_list(product_costs):
                         product_code = product_code_parts[1]
                         if plant_letter.lower() == 's':
                             plant_number = '580'
-                        elif plant_letter.lower() == 'a':
-                            plant_number = '560'
                         elif plant_letter.lower() == 'c':
                             plant_number = '550'
                         elif plant_letter.lower() == 'p':
@@ -157,14 +154,12 @@ def convert_ingredient_list():
         convert_cost_list(product_cost)
         
         plant_file_550 = get_required_file_confirm("Brill ingredient list for Adams Center (550 / 64)")
-        plant_file_560 = get_required_file_confirm("Brill ingredient list for Augusta (560 / 61)")
         plant_file_580 = get_required_file_confirm("Brill ingredient list for Sangerfield (580 / 66)")
         plant_file_555 = get_required_file_confirm("Brill ingredient list for Springville (555 / 55)")
         plant_file_540 = get_required_file_confirm("Brill ingredient list for Strykersville (540 / 54)")
 
         plant_files = [
             [plant_file_550, '550'],
-            [plant_file_560, '560'],
             [plant_file_580, '580'],
             [plant_file_555, '555'],
             [plant_file_540, '540'],
@@ -199,7 +194,6 @@ def convert_ingredient_list():
         print "\r\nException report written to %s" % exception_file
         print "\r\nCost output written to %s" % output_filename
         print "%d costs for Adams Center (550 / 64)" % counts_by_plant['550']
-        print "%d costs for Augusta (560 / 61)" % counts_by_plant['560']
         print "%d costs for Sangerfield (580 / 66)" % counts_by_plant['580']
         print "%d costs for Springville (555 / 55)" % counts_by_plant['555']
         print "%d costs for Strykersville (540 / 54)" % counts_by_plant['540']
@@ -344,7 +338,6 @@ else:
 
 if process_ss.lower() in ['y','']:
     convert_to_xf1([
-        {'product_code_prefix': '61', 'plant_number': '560', 'plant_name': 'Augusta Mill'},
         {'product_code_prefix': '64', 'plant_number': '550', 'plant_name': 'Adams Center'},
         {'product_code_prefix': '66', 'plant_number': '580', 'plant_name': 'Sangerfield Mill'},
         {'product_code_prefix': '55', 'plant_number': '555', 'plant_name': 'Springville Mill'},
